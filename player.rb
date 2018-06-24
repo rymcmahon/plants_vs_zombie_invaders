@@ -4,6 +4,8 @@ class Player
     @y = 200
     @angle = 0
     @image = Gosu::Image.new('images/lava-guava.png')
+    @velocity_x = 0
+    @velocity_y = 0
   end
 
   def draw
