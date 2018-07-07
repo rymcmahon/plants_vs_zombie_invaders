@@ -1,5 +1,5 @@
 class Zombie
-  SPEED = 4
+  SPEED = 2
   def initialize(window)
     @radius = 20
     @x = rand(window.width - 2 * @radius) + @radius
