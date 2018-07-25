@@ -2,20 +2,24 @@ require 'gosu'
 require_relative 'plant'
 require_relative 'zombie'
 
-WIDTH = 800
-HEIGHT = 600
 
 class PlantsVsZombieInvaders < Gosu::Window
+  WIDTH = 800
+  HEIGHT = 600
+  ZOMBIE_FREQUENCY = 0.015
+
   def initialize
     super(WIDTH, HEIGHT)
     self.caption = 'Plants vs. Zombie Invaders!'
     @plant = Plant.new(self)
-    @zombie = Zombie.new(self)
+    @zombies = []
   end
 
   def draw
     @plant.draw
-    @zombie.draw
+    @zombies.each do |zombie|
+      zombie.draw
+    end
   end
 
   def update
@@ -23,7 +27,12 @@ class PlantsVsZombieInvaders < Gosu::Window
     @plant.turn_right if button_down?(Gosu::KbRight)
     @plant.accelerate if button_down?(Gosu::KbUp)
     @plant.move
-    @zombie.move
+    if rand < ZOMBIE_FREQUENCY
+      @zombies.push Zombie.new(self)
+    end
+    @zombies.each do |zombie|
+      zombie.move
+    end
   end
 end
 
