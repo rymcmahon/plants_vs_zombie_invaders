@@ -2,6 +2,7 @@ require 'gosu'
 require_relative 'plant'
 require_relative 'zombie'
 require_relative 'bullet'
+require_relative 'explosion'
 
 class PlantsVsZombieInvaders < Gosu::Window
   WIDTH = 800
