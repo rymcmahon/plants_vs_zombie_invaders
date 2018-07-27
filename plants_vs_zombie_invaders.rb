@@ -40,6 +40,15 @@ class PlantsVsZombieInvaders < Gosu::Window
     @bullets.each do |bullet|
       bullet.move
     end
+    @zombies.dup.each do |zombie|
+      @bullets.dup.each do |bullet|
+        distance = Gosu.distance(zombie.x, zombie.y, bullet.x, bullet.y)
+        if distance < zombie.radius + bullet.radius
+          @zombies.delete zombie
+          @bullets.delete bullet
+        end
+      end
+    end
   end
 
   def button_down(id)

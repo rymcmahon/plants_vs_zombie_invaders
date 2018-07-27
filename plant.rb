@@ -4,10 +4,10 @@ class Plant
   FRICTION = 0.9
   attr_reader :x, :y, :angle, :radius
 
-  
+
   def initialize(window)
-    @x = 200
-    @y = 200
+    @x = 300
+    @y = 550
     @angle = 0
     @image = Gosu::Image.new('images/lava-guava.png')
     @velocity_x = 0

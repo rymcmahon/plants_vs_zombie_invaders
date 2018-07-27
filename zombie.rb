@@ -1,7 +1,9 @@
 class Zombie
   SPEED = 2
+  attr_reader :x, :y, :radius
+
   def initialize(window)
-    @radius = 20
+    @radius = 65
     @x = rand(window.width - 2 * @radius) + @radius
     @y = 0
     @image = Gosu::Image.new('images/balloon-zombie-scaled.png')
