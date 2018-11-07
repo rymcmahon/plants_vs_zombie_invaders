@@ -15,6 +15,7 @@ class PlantsVsZombieInvaders < Gosu::Window
     @plant = Plant.new(self)
     @zombies = []
     @bullets = []
+    @explosions = []
   end
 
   def draw
@@ -24,6 +25,9 @@ class PlantsVsZombieInvaders < Gosu::Window
     end
     @bullets.each do |bullet|
       bullet.draw
+    end
+    @explosions.each do |explosion|
+      explosion.draw
     end
   end
 
@@ -47,6 +51,7 @@ class PlantsVsZombieInvaders < Gosu::Window
         if distance < zombie.radius + bullet.radius
           @zombies.delete zombie
           @bullets.delete bullet
+          @explosions.push Explosion.new(self, zombie.x, zombie.y)
         end
       end
     end
