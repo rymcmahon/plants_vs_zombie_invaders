@@ -1,8 +1,8 @@
 class Zombie
-  SPEED = 2
   attr_reader :x, :y, :radius
 
   def initialize(window)
+    @speed = rand(2..7)
     @radius = 65
     @x = rand(window.width - 2 * @radius) + @radius
     @y = 0
@@ -10,7 +10,7 @@ class Zombie
   end
 
   def move
-    @y += SPEED
+    @y += @speed
   end
 
   def draw
