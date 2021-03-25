@@ -16,6 +16,8 @@ class PlantsVsZombieInvaders < Gosu::Window
     @zombies = []
     @bullets = []
     @explosions = []
+    @font = Gosu::Font.new(20)
+    @score = 0
   end
 
   def draw
@@ -29,6 +31,7 @@ class PlantsVsZombieInvaders < Gosu::Window
     @explosions.each do |explosion|
       explosion.draw
     end
+    @font.draw(@score.to_s, 700, 20, 2)
   end
 
   def update
@@ -52,6 +55,7 @@ class PlantsVsZombieInvaders < Gosu::Window
           @zombies.delete zombie
           @bullets.delete bullet
           @explosions.push Explosion.new(self, zombie.x, zombie.y)
+          @score +=5
         end
       end
     end
