@@ -16,7 +16,7 @@ class Zombie
   def move
     @x += @velocity_x
     @y += @velocity_y
-    if @x > 800 || @x < 0
+    if @x > 1400 || @x < 0
       @velocity_x *= -1
     end
     if @y > 600 || @y < 0
