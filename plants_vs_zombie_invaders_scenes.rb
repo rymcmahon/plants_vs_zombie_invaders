@@ -5,6 +5,8 @@ require_relative 'bullet'
 require_relative 'explosion'
 
 class PlantsVsZombieInvaders < Gosu::Window
+  attr_reader :zombies_spawned, :zombies_destroyed, :shots_fired, :hit_rate
+
   WIDTH = 1400
   HEIGHT = 600
   ZOMBIE_FREQUENCY = 0.015
@@ -21,10 +23,12 @@ class PlantsVsZombieInvaders < Gosu::Window
     @zombies = []
     @bullets = []
     @explosions = []
-    @font = Gosu::Font.new(20)
+    @font = Gosu::Font.new(15)
     @scene = :game
-    @zombies_appeared = 0
     @zombies_destroyed = 0
+    @shots_fired = 0
+    @zombies_spawned = 0
+    @hit_rate = 0.00
   end
 
   def draw
@@ -73,7 +77,7 @@ class PlantsVsZombieInvaders < Gosu::Window
     @plant.move
     if rand < ZOMBIE_FREQUENCY
       @zombies.push Zombie.new(self)
-      @zombies_appeared += 1
+      @zombies_spawned += 1
     end
     @zombies.each do |zombie|
       zombie.move
@@ -90,6 +94,7 @@ class PlantsVsZombieInvaders < Gosu::Window
           @explosions.push Explosion.new(self, zombie.x, zombie.y)
           @zombies_destroyed += 1
         end
+        calculate_hit_rate(@zombies_destroyed, @shots_fired)
       end
     end
   end
@@ -97,7 +102,9 @@ class PlantsVsZombieInvaders < Gosu::Window
   def button_down_game(id)
     if id == Gosu::KbSpace
       @bullets.push Bullet.new(self, @plant.x, @plant.y, @plant.angle)
+      @shots_fired += 1
     end
+    calculate_hit_rate(@zombies_destroyed, @shots_fired)
   end
 
   def draw_game
@@ -112,8 +119,19 @@ class PlantsVsZombieInvaders < Gosu::Window
     @explosions.each do |explosion|
       explosion.draw
     end
-    @font.draw_text("Zombies Destroyed: #{@zombies_destroyed.to_s}", 1100, 20, 2, 1, 1, 0xff_000000)
-    @font.draw_text("Total Zombies: #{@zombies_appeared.to_s}", 900, 20, 2, 1, 1, 0xff_000000)
+    @font.draw_text("Zombies Spawned: #{@zombies_spawned.to_s}", 1205, 20, 2, 1, 1, 0xff_ffffff)
+    @font.draw_text("Zombies Destroyed: #{@zombies_destroyed.to_s}", 1205, 40, 2, 1, 1, 0xff_ffffff)
+    @font.draw_text("Shots Fired: #{@shots_fired.to_s}", 1205, 60, 2, 1, 1, 0xff_ffffff)
+    @font.draw_text("Hit Rate: #{@hit_rate}%", 1205, 80, 2, 1, 1, 0xff_ffffff)
+    Gosu.draw_rect(1200, 10, 150, 100, 0xB3_000000, 1, mode=:default)
+  end
+  
+  def calculate_hit_rate(zombies_destroyed, shots_fired)
+    if @shots_fired > 0
+      @hit_rate =  (@zombies_destroyed.to_f / @shots_fired.to_f * 100.00).round(2)
+    else
+      @hit_rate = 0.00
+    end
   end
 
   def draw_end
