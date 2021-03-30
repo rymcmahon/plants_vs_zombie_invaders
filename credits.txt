@@ -1,0 +1,11 @@
+Plants vs. Zombie Invaders
+by Ryan & Sidney McMahon
+
+Based on the series Plants vs. Zombies
+
+Images from OpenGameArt.org and the Plants vs. Zombies series
+
+Sound effects from FreeSound.org
+
+Built with Ruby and the Gosu Library
+
