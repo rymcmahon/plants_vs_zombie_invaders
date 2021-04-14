@@ -3,6 +3,7 @@ require_relative 'plant'
 require_relative 'zombie'
 require_relative 'bullet'
 require_relative 'explosion'
+require_relative 'credit'
 
 class PlantsVsZombieInvaders < Gosu::Window
   attr_reader :zombies_spawned, :zombies_destroyed, :shots_fired, :hit_rate
@@ -10,6 +11,7 @@ class PlantsVsZombieInvaders < Gosu::Window
   WIDTH = 1400
   HEIGHT = 600
   ZOMBIE_FREQUENCY = 0.015
+  MAX_ZOMBIES = 300
   
   def initialize
     super(WIDTH, HEIGHT)
@@ -29,6 +31,10 @@ class PlantsVsZombieInvaders < Gosu::Window
     @shots_fired = 0
     @zombies_spawned = 0
     @hit_rate = 0.00
+    @zombie_groans = Gosu::Song.new('sounds/zombie-moans.ogg')
+    @zombie_groans.play(true)
+    @explosion_sound = Gosu::Sample.new('sounds/explosion.ogg')
+    @shooting_sound = Gosu::Sample.new('sounds/laser-shot.ogg')
   end
 
   def draw
@@ -61,6 +67,14 @@ class PlantsVsZombieInvaders < Gosu::Window
     initialize_game
   end
 
+  def button_down_end(id)
+    if id == Gosu::KbP
+      initialize_game
+    elsif id == Gosu::KbQ
+      close
+    end
+  end
+
   def update
     case @scene
     when :game
@@ -91,17 +105,25 @@ class PlantsVsZombieInvaders < Gosu::Window
         if distance < zombie.radius + bullet.radius
           @zombies.delete zombie
           @bullets.delete bullet
+          @explosion_sound.play
           @explosions.push Explosion.new(self, zombie.x, zombie.y)
           @zombies_destroyed += 1
         end
         calculate_hit_rate(@zombies_destroyed, @shots_fired)
       end
     end
+    initialize_end(:all_zombies_destroyed) if @zombies_spawned == MAX_ZOMBIES && @zombies_spawned == @zombies_destroyed
+    @zombies.each do |zombie|
+      distance = Gosu.distance(zombie.x, zombie.y, @plant.x, @plant.y)
+      initialize_end(:hit_by_zombie) if distance < @plant.radius + zombie.radius
+    end
+    initialize_end(:off_top_of_screen) if @plant.y < -@plant.radius
   end
 
   def button_down_game(id)
     if id == Gosu::KbSpace
       @bullets.push Bullet.new(self, @plant.x, @plant.y, @plant.angle)
+      @shooting_sound.play
       @shots_fired += 1
     end
     calculate_hit_rate(@zombies_destroyed, @shots_fired)
@@ -134,8 +156,53 @@ class PlantsVsZombieInvaders < Gosu::Window
     end
   end
 
-  def draw_end
+  def initialize_end(fate)
+    case fate
+    when :all_zombies_destroyed
+      @message = "You saved the neighborhood! All #{@zombies_destroyed} zombies were destroyed!"
+      @message_two = "You fired #{@shots_fired} shots and your hit rate was #{@hit_rate}"
+    when :hit_by_zombie
+      @message = "The zombies ate your brains!"
+      @message_two = "Before the game ended, "
+      @message_two += "you fired #{@shots_fired} shots, took out #{@zombies_destroyed} zombies, and your hit rate was #{@hit_rate}%."
+    when :off_top_of_screen
+      @message = "Your plant flying skills need some work! Don't fly too high."
+      @message_two = "Before the game ended, "
+      @message_two += "you fired #{@shots_fired} shots, took out #{@zombies_destroyed} zombies, and your hit rate was #{@hit_rate}%."
+    end
+    @bottom_message = "Press P to play again, or Q to quit."
+    @message_font = Gosu::Font.new(28)
+    @credits = []
+    y = 700
+    File.open('credits.txt').each do |line|
+      @credits.push(Credit.new(self,line.chomp,100,y))
+      y += 30
+    end
+    @scene = :end
+  end
 
+  def draw_end
+    clip_to(50, 140, 700, 360) do
+      @credits.each do |credit|
+        credit.draw
+      end
+    end
+    draw_line(0,140,Gosu::Color::RED,WIDTH,140,Gosu::Color::RED)
+    @message_font.draw(@message,40,40,1,1,1,Gosu::Color::FUCHSIA)
+    @message_font.draw(@message_two,40,75,1,1,1,Gosu::Color::FUCHSIA)
+    draw_line(0,500,Gosu::Color::RED,WIDTH,500,Gosu::Color::RED)
+    @message_font.draw(@bottom_message,180,540,1,1,1,Gosu::Color::AQUA)
+  end
+
+  def update_end
+    @credits.each do |credit|
+      credit.move
+    end
+    if @credits.last.y < 150
+      @credits.each do |credit|
+        credit.reset
+      end
+    end
   end
 end
 
