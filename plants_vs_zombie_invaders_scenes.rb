@@ -113,6 +113,12 @@ class PlantsVsZombieInvaders < Gosu::Window
         calculate_hit_rate(@zombies_destroyed, @shots_fired)
       end
     end
+    @explosions.dup.each do |explosion|
+      @explosions.delete explosion if explosion.finished
+    end
+    @bullets.dup.each do |bullet|
+      @bullets.delete bullet unless bullet.onscreen?
+    end
     initialize_end(:all_zombies_destroyed) if @zombies_spawned == MAX_ZOMBIES && @zombies_spawned == @zombies_destroyed
     @zombies.each do |zombie|
       distance = Gosu.distance(zombie.x, zombie.y, @plant.x, @plant.y)
