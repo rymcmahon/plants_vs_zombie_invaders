@@ -16,7 +16,7 @@ class PlantsVsZombieInvaders < Gosu::Window
   def initialize
     super(WIDTH, HEIGHT)
     self.caption = 'Plants vs. Zombie Invaders!'
-    @background_image = Gosu::Image.new('images/pvzi-opening-scene-2.png')
+    @background_image = Gosu::Image.new('images/pvzi-opening-scene.png')
     @scene = :start
   end
 
