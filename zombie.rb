@@ -1,7 +1,6 @@
 class Zombie
   attr_reader :x, :y, :radius
 
-  
   def initialize(window)
     @window = window
     @speed = rand(1..4)
@@ -31,5 +30,21 @@ class Zombie
   def select_zombie
     zombies = ['images/rocket-pack-zombie.png', 'images/balloon-zombie.png', 'images/hoverboard-zombie.png', 'images/ostrich-zombie.png']
     zombies.sample
+  end
+
+  def remove(zombies)
+    @zombies.dup.each do |zombie|
+      @bullets.dup.each do |bullet|
+        distance = Gosu.distance(zombie.x, zombie.y, bullet.x, bullet.y)
+        if distance < zombie.radius + bullet.radius
+          @zombies.delete zombie
+          @bullets.delete bullet
+          @explosion_sound.play
+          @explosions.push Explosion.new(self, zombie.x, zombie.y)
+          @zombies_destroyed += 1
+        end
+        calculate_hit_rate(@zombies_destroyed, @shots_fired)
+      end
+    end
   end
 end
